@@ -7,14 +7,8 @@ resource "aws_instance" "ftd" {
   subnet_id = element(aws_subnet.mgmt.*.id,count.index)
   key_name = aws_key_pair.key_pair.id
   vpc_security_group_ids = [aws_security_group.sg.id]
-  # user_data = <<EOF
-  #         #Sensor
-  #         {
-  #                   "AdminPassword": "${var.admin_password}",
-  #                   "Hostname": "${var.host_name}",
-  #                   "ManageLocally": "Yes"
-  #         }
-  # EOF
+  associate_public_ip_address = var.associate_public_ip_address
+  user_data = "${file("ftd_user_data")}"
 
   ebs_block_device {
     device_name = "/dev/sda1"
@@ -59,11 +53,25 @@ resource "aws_network_interface" "inside" {
     device_index = 2
   }
 }
-
+/*
 resource "aws_network_interface" "mgmt" {
-  count = var.instance_count
+  count = var.create_ftd && var.instance_count > 0 ? 1 : 0
   description = "${var.name}-mgmt-${count.index+1}"
   subnet_id       = element(aws_subnet.mgmt.*.id,count.index)
+  security_groups = [aws_security_group.sg.id]
+  source_dest_check = false
+
+  attachment {
+    instance     = aws_instance.ftd[count.index].id
+    device_index = 3
+  }
+}
+*/
+
+resource "aws_network_interface" "diag" {
+  count = var.instance_count
+  description = "${var.name}-diag-${count.index+1}"
+  subnet_id       = element(aws_subnet.diag.*.id,count.index)
   security_groups = [aws_security_group.sg.id]
   source_dest_check = false
 
@@ -85,9 +93,7 @@ resource "aws_security_group" "sg" {
     to_port = 80
     protocol = "tcp"
     cidr_blocks = [
-      "10.0.0.0/8",
-      "172.20.64.64/28",
-      "172.20.64.80/28"
+      "0.0.0.0/0"
     ]
     description = "Allow HTTP traffic"
   }
@@ -96,9 +102,7 @@ resource "aws_security_group" "sg" {
     to_port = 443
     protocol = "tcp"
     cidr_blocks = [
-      "10.0.0.0/8",
-      "172.20.64.64/28",
-      "172.20.64.80/28"
+      "0.0.0.0/0"
     ]
     description = "Allow HTTPS traffic"
   }

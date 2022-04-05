@@ -12,16 +12,16 @@ variable "cidr" {
   default = ""
 }
 
-variable "instance_tenancy" {
+variable "transit_gwy_id" {
   type = string
   description = ""
   default = ""
 }
 
-variable "transit_gwy_id" {
-  type = string
+variable "enable_internet_gateway" {
+  type = bool
   description = ""
-  default = ""
+  default = true
 }
 
 ## SUBNETS
@@ -163,6 +163,12 @@ variable "cisco_ftd_ami" {
 }
 
 # FTD
+variable "create_ftd" {
+  description = ""
+  type = bool
+  default = true
+}
+
 variable "instance_type" {
   description = ""
   type = string

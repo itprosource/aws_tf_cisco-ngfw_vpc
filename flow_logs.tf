@@ -1,5 +1,9 @@
+# FLOW LOG SETTINGS
+# These resources deploy and configure flow logs in your VPC.
+# DO NOT MODIFY unless you have a reason and know what you're doing.
+# Otherwise, these settings can remain the way they are and should not need changing.
+
 locals {
-  # Only create flow log if enabled
   enable_flow_log = var.enable_flow_log
 
   create_flow_log_cloudwatch_iam_role  = local.enable_flow_log && var.flow_log_destination_type != "s3" && var.create_flow_log_cloudwatch_iam_role
@@ -25,10 +29,8 @@ resource "aws_flow_log" "this" {
   }
 }
 
-################################################################################
-# Flow Log CloudWatch
-################################################################################
 
+# Flow Log CloudWatch
 resource "aws_cloudwatch_log_group" "flow_log" {
   count = local.create_flow_log_cloudwatch_log_group ? 1 : 0
 
