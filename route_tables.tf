@@ -41,13 +41,6 @@ resource "aws_route_table" "inside" {
   }
 }
 
-resource "aws_route" "inside_eni" {
-  count = var.instance_count
-  route_table_id = element(aws_route_table.inside.*.id,count.index)
-  destination_cidr_block = "0.0.0.0/0"
-  network_interface_id = element(aws_network_interface.inside.*.id,count.index)
-}
-
 resource "aws_route_table_association" "inside_association" {
   count = length(var.inside_subnets)
   subnet_id = element(aws_subnet.inside.*.id,count.index)
@@ -65,15 +58,6 @@ resource "aws_route_table" "mgmt" {
   }
 }
 
-resource "aws_route" "mgmt_eni" {
-  count = var.instance_count
-  route_table_id = element(aws_route_table.mgmt.*.id,count.index)
-  destination_cidr_block = "0.0.0.0/0"
-  network_interface_id = element(aws_instance.ftd[*].primary_network_interface_id,count.index)
-}
-
-
-
 resource "aws_route_table_association" "mgmt_association" {
   count = length(var.mgmt_subnets)
   subnet_id = element(aws_subnet.mgmt.*.id,count.index)
@@ -89,13 +73,6 @@ resource "aws_route_table" "diag" {
   tags = {
     Name = "${var.name}-diag-${count.index+1}"
   }
-}
-
-resource "aws_route" "diag_eni" {
-  count = var.instance_count
-  route_table_id = element(aws_route_table.diag.*.id,count.index)
-  destination_cidr_block = "0.0.0.0/0"
-  network_interface_id = element(aws_network_interface.diag.*.id,count.index)
 }
 
 resource "aws_route_table_association" "diag_association" {

@@ -8,7 +8,6 @@ resource "aws_instance" "ftd" {
   key_name = aws_key_pair.key_pair.id
   vpc_security_group_ids = [aws_security_group.sg.id]
   associate_public_ip_address = var.associate_public_ip_address
-  user_data = "${file("ftd_user_data")}"
 
   ebs_block_device {
     device_name = "/dev/sda1"
