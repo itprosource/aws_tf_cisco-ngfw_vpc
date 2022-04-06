@@ -29,10 +29,10 @@ module "ftd_vpc" {
   # Subnets must be contained within VPC CIDR block and cannot overlap each other.
   # Each subnet type must have as many ranges as there are provided AZs.
   # If two AZs are provided, then each block must contain two ranges - and so on.
-  inside_subnets = [
+  trusted_subnets = [
     "10.0.1.0/28",
     "10.0.1.16/28"]
-  outside_subnets = [
+  untrusted_subnets = [
     "10.0.1.32/28",
     "10.0.1.48/28"]
   mgmt_subnets = [
@@ -40,8 +40,8 @@ module "ftd_vpc" {
     "10.0.1.80/28"]
   diag_subnets = [
     "10.0.1.96/28",
-    "10.0.1.112/28"
-  ]
+    "10.0.1.112/28"]
+  nat_gwy_subnet = "10.0.1.128/28"
 
   # VPC flow log options.
   # DO NOT MODIFY unless you have a specific reason for doing so. Leave as-is in most situations.
@@ -70,10 +70,6 @@ module "ftd_vpc" {
   # More traffic-intensive workloads will require more sophisticated instance types.
   instance_type = "c5.xlarge"
 
-  # This attribute determines whether or not the FTD gets a public IP automatically.
-  # If you want to deploy FTD without public IP (for use in an internal environment), set to false.
-  associate_public_ip_address = true
-
   # Below settings for FTD storage are based on Cisco recommendations.
   # These should not need to change under most circumstances.
   volume_size = "52"
@@ -84,6 +80,6 @@ module "ftd_vpc" {
 
   # Name to append to the end of the secret in Secrets Manager holding the FTD TLS key.
   # My preference is to add the date and time of template deployment, but you can use whatever you want.
-  secret_name = "test-key-9"
+  secret_name = "example"
 }
 

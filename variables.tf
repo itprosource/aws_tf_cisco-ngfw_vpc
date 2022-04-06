@@ -26,13 +26,13 @@ variable "enable_internet_gateway" {
 
 ## SUBNETS
 
-variable "inside_subnets" {
+variable "trusted_subnets" {
   type = list(string)
   description = ""
   default = []
 }
 
-variable "outside_subnets" {
+variable "untrusted_subnets" {
   type = list(string)
   description = ""
   default = []
@@ -48,6 +48,12 @@ variable "diag_subnets" {
   type = list(string)
   description = ""
   default = []
+}
+
+variable "nat_gwy_subnet" {
+  type = string
+  description = ""
+  default = ""
 }
 
 variable "azs" {

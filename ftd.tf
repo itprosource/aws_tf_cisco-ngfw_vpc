@@ -7,7 +7,6 @@ resource "aws_instance" "ftd" {
   subnet_id = element(aws_subnet.mgmt.*.id,count.index)
   key_name = aws_key_pair.key_pair.id
   vpc_security_group_ids = [aws_security_group.sg.id]
-  associate_public_ip_address = var.associate_public_ip_address
 
   ebs_block_device {
     device_name = "/dev/sda1"
@@ -27,10 +26,10 @@ resource "aws_instance" "ftd" {
 }
 
 # ENIs
-resource "aws_network_interface" "outside" {
+resource "aws_network_interface" "untrusted" {
   count = var.instance_count
-  description = "${var.name}-out-${count.index+1}"
-  subnet_id       = element(aws_subnet.outside.*.id,count.index)
+  description = "${var.name}-untrust-${count.index+1}"
+  subnet_id       = element(aws_subnet.untrusted.*.id,count.index)
   security_groups = [aws_security_group.sg.id]
   source_dest_check = false
 
@@ -40,10 +39,16 @@ resource "aws_network_interface" "outside" {
   }
 }
 
-resource "aws_network_interface" "inside" {
+resource "aws_eip" "untrust" {
   count = var.instance_count
-  description = "${var.name}-in-${count.index+1}"
-  subnet_id       = element(aws_subnet.inside.*.id,count.index)
+  vpc = true
+  network_interface = element(aws_network_interface.untrusted.*.id,count.index)
+}
+
+resource "aws_network_interface" "trusted" {
+  count = var.instance_count
+  description = "${var.name}-trust-${count.index+1}"
+  subnet_id       = element(aws_subnet.trusted.*.id,count.index)
   security_groups = [aws_security_group.sg.id]
   source_dest_check = false
 

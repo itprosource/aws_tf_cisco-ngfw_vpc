@@ -3,27 +3,27 @@
 # The availability_zone line will create a subnet in each AZ specified in the module.
 # You MUST specify multiple AZs in order to deploy multiples of the same subnet type.
 
-# Outside subnet for untrusted traffic coming in from the internet.
-resource "aws_subnet" "outside" {
-  count = length(var.outside_subnets)
-  cidr_block = element(var.outside_subnets, count.index)
+# untrusted subnet for untrusted traffic coming in from the internet.
+resource "aws_subnet" "untrusted" {
+  count = length(var.untrusted_subnets)
+  cidr_block = element(var.untrusted_subnets, count.index)
   vpc_id = aws_vpc.vpc.id
   availability_zone = element(var.azs, count.index)
 
   tags = {
-    Name = "${var.name}-OUT-${count.index+1}"
+    Name = "${var.name}-untrust-${count.index+1}"
   }
 }
 
-# Inside subnet for trusted traffic from behind the firewall.
-resource "aws_subnet" "inside" {
-  count = length(var.inside_subnets)
-  cidr_block = element(var.inside_subnets, count.index)
+# trusted subnet for trusted traffic from behind the firewall.
+resource "aws_subnet" "trusted" {
+  count = length(var.trusted_subnets)
+  cidr_block = element(var.trusted_subnets, count.index)
   vpc_id = aws_vpc.vpc.id
   availability_zone = element(var.azs, count.index)
 
   tags = {
-    Name = "${var.name}-IN-${count.index+1}"
+    Name = "${var.name}-trust-${count.index+1}"
   }
 }
 
@@ -36,7 +36,7 @@ resource "aws_subnet" "mgmt" {
   availability_zone = element(var.azs, count.index)
 
   tags = {
-    Name = "${var.name}-MGMT-${count.index+1}"
+    Name = "${var.name}-mgmt-${count.index+1}"
   }
 }
 
@@ -48,6 +48,16 @@ resource "aws_subnet" "diag" {
   availability_zone = element(var.azs, count.index)
 
   tags = {
-    Name = "${var.name}-DIAG-${count.index+1}"
+    Name = "${var.name}-diag-${count.index+1}"
+  }
+}
+
+resource "aws_subnet" "nat_gwy_subnet" {
+  cidr_block = var.nat_gwy_subnet
+  vpc_id = aws_vpc.vpc.id
+  availability_zone = var.azs[0]
+
+  tags = {
+    Name = "${var.name}-nat_gwy"
   }
 }
