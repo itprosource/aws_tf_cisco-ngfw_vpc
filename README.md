@@ -1,7 +1,4 @@
 <div id="top"></div>
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
-
 
 <!-- PROJECT LOGO -->
 <br />
@@ -26,5 +23,3 @@ This Terraform template builds a secure AWS VPC suitable for hosting the Cisco N
 
 * [Terraform](https://www.terraform.io/)
 
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/austinthome
